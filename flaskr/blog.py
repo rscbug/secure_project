@@ -36,10 +36,12 @@ def show():
         " ORDER BY created DESC"
     ).fetchall()
 
+    posts_user=[]
     for post in posts:
         if g.user['id'] == post['author_id']:
             post["body"]=decrypt_data(get_hash(g.user['username']), str(g.user['id'])*16, post["body"])
-    return render_template("blog/index.html", posts=posts)
+            posts_user.append(post)
+    return render_template("blog/index.html", posts=posts_user)
 
 
 def get_post(id, check_author=True):
@@ -126,4 +128,4 @@ def delete(id):
     db = get_db()
     db.execute("DELETE FROM post WHERE id = ?", (id,))
     db.commit()
-    return redirect(url_for("blog.index"))
+    return redirect(url_for("blog.show"))
